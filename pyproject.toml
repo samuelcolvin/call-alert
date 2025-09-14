@@ -49,11 +49,11 @@ reportUnnecessaryTypeIgnoreComment = true
 reportUnusedParameter = true
 reportIncompatibleUnannotatedOverride = true
 reportImplicitAbstractClass = true
-include = ["src"]
+include = ["call_alert"]
 venv = ".venv"
 
 [[tool.pyright.executionEnvironments]]
-root = "src/calendar_get.py"
+root = "call_alert/calendar_get.py"
 reportMissingTypeStubs = false
 reportUnknownVariableType = false
 reportUnknownMemberType = false
