@@ -10,3 +10,5 @@ wheels/
 .venv
 .claude/
 service-account.json
+/calendar-auth-credentials.json
+/calendar-temporary-auth-token.json
