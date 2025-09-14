@@ -15,8 +15,9 @@ google_auth_scopes = ['https://www.googleapis.com/auth/cloud-platform']
 def play_text(text: str):
     auth_token = get_auth_token()
 
-    random_voice = random.choice(english_voices)
-    print('voice chosen:', random_voice)
+    # voice = random.choice(english_voices)
+    # print('voice chosen:', random_voice)
+    voice = Voice(name='en-GB-Chirp3-HD-Zephyr', language_code='en-GB')
 
     request_data = {
         'audioConfig': {
@@ -27,7 +28,7 @@ def play_text(text: str):
             'speakingRate': 1,
         },
         'input': {'text': text},
-        'voice': {'languageCode': random_voice.language_code, 'name': random_voice.name},
+        'voice': {'languageCode': voice.language_code, 'name': voice.name},
     }
     r = httpx.post(
         'https://texttospeech.googleapis.com/v1beta1/text:synthesize',

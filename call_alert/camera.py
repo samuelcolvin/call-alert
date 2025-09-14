@@ -26,7 +26,7 @@ else:
     from AVFoundation import AVCaptureDevice, AVMediaTypeVideo
 
 
-def check_camera_active() -> bool:
+def camera_active() -> bool:
     property_address = CoreMediaIO.CMIOObjectPropertyAddress(CoreMediaIO.kCMIODevicePropertyDeviceIsRunningSomewhere)
 
     for camera in AVCaptureDevice.devicesWithMediaType_(AVMediaTypeVideo):
