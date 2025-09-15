@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -48,8 +49,12 @@ class CalEvent(BaseModel):
     def video_link(self) -> str | None:
         if self.hangout_link:
             return self.hangout_link
-        elif self.location and self.location.startswith('http'):
-            return self.location
+        elif self.location:
+            if self.location.startswith('http'):
+                return self.location
+            elif 'microsoft teams' in self.location.lower() and self.description:
+                if m := re.search('Join the meeting now<(.+?)>', self.description):
+                    return m.group(1)
         return None
 
 
@@ -119,3 +124,14 @@ def get_upcoming_appointments(
 def rfc3339(dt: datetime) -> str:
     assert dt.tzinfo is not None, 'Datetime object must have a timezone'
     return dt.isoformat().replace('+00:00', 'Z')
+
+
+if __name__ == '__main__':
+    from devtools import debug
+
+    service = authenticate_google_calendar(True)
+    # min_datetime = datetime.now(tz=timezone.utc) - timedelta(minutes=5)
+    min_datetime = datetime.now(tz=timezone.utc) - timedelta(hours=6)
+    raw_events = get_upcoming_appointments(service, min_datetime)
+    events = events_schema.validate_python(raw_events)
+    debug(events)

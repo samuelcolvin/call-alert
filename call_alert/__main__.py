@@ -1,3 +1,4 @@
+import logging
 import time
 from datetime import datetime, timedelta, timezone
 
@@ -8,6 +9,12 @@ from .text_to_speech import play_text
 
 default_sleep = timedelta(minutes=5)
 
+logger = logging.getLogger('call_alert')
+
+logging.basicConfig(
+    level=logging.INFO, format='[%(asctime)s] %(name)s %(levelname)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S'
+)
+
 
 def main():
     first_step = True
@@ -17,7 +24,7 @@ def main():
             cal_events = get_calendar_events(first_step)
             first_step = False
             if not cal_events:
-                print(f'No upcoming calls, waiting {display_interval(default_sleep)}')
+                logger.info(f'No upcoming calls, waiting {display_interval(default_sleep)}')
                 time.sleep(default_sleep.total_seconds())
                 continue
 
@@ -25,7 +32,7 @@ def main():
             time_until_start = next_event.start - datetime.now(tz=timezone.utc)
             if time_until_start > timedelta():
                 sleep_time = min(default_sleep, time_until_start)
-                print(
+                logger.info(
                     f'Next calls starts at {next_event.start} in {display_interval(time_until_start)}, '
                     f'waiting {sleep_time.total_seconds():0.0f} seconds'
                 )
@@ -33,27 +40,27 @@ def main():
             else:
                 event_sequence(next_event)
     except KeyboardInterrupt:
-        print('stopped')
+        logger.info('stopped')
     except Exception as e:
         notify('Call Alert Error!', f'Call alert crashed: {e}', sound='error')
         raise
 
 
 def event_sequence(event: TimeRangeCalEvent):
-    print(f'Starting event sequence for event "{event.summary}" starting at {event.start}...')
+    logger.info(f'Starting event sequence for event "{event.summary}" starting at {event.start}...')
     for sleep_time in [120, 360]:
         event_alert(event)
         time.sleep(sleep_time)
 
     event_alert(event)
-    print(f'Ended event sequence for event "{event.summary}".')
+    logger.info(f'Ended event sequence for event "{event.summary}".')
 
 
 def event_alert(event: TimeRangeCalEvent):
     time_since_start = datetime.now(tz=timezone.utc) - event.start
     minutes = int(time_since_start.total_seconds() / 60)
     if camera_active():
-        print(f'Skipping {minutes} minute{plural(minutes)} notification for "{event.summary}", camera active')
+        logger.info(f'Skipping {minutes} minute{plural(minutes)} notification for "{event.summary}", camera active')
     else:
         if minutes == 0:
             notify(f'Call has just started', event.summary, link=event.video_link)
