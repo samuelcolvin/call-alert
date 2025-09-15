@@ -1,4 +1,3 @@
-import random
 from dataclasses import dataclass
 from tempfile import NamedTemporaryFile
 from typing import Literal
