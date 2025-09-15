@@ -56,13 +56,13 @@ def event_alert(event: TimeRangeCalEvent):
         print(f'Skipping {minutes} minute{plural(minutes)} notification for "{event.summary}", camera active')
     else:
         if minutes == 0:
+            notify(f'Call has just started', event.summary, event.video_link)
             play_text(f'Your call "{event.summary}" has just started')
         else:
-            msg = (
+            notify(f'Call started {minutes} minute{plural(minutes)} ago', event.summary, event.video_link)
+            play_text(
                 f'Your call "{event.summary}" started {int_as_word(minutes)} minute{plural(minutes)} ago, JOIN IT NOW!'
             )
-            notify('Call Alert', msg)
-            play_text(msg)
 
 
 def display_interval(delta: timedelta) -> str:
